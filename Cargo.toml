@@ -1,6 +1,8 @@
 [package]
 authors = ["Supanat Potiwarakorn <supanat.ptk@gmail.com>"]
+description = "Mock CosmWasm contract that can set predetermined responses to queries and keep track of execution for testing purposes."
 edition = "2021"
+license = "MIT OR Apache-2.0"
 name = "mock-cosmwasm-contract"
 version = "0.1.0"
 
