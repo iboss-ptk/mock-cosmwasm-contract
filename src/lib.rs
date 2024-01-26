@@ -1,6 +1,11 @@
+#[cfg(not(feature = "library"))]
 pub mod contract;
+
 mod error;
 pub mod msg;
-pub mod state;
+mod state;
 
 pub use crate::error::ContractError;
+pub use crate::msg::{
+    query_msg, remove_stub_query_msg, set_stub_query_msg, ExecuteMsg, InstantiateMsg, QueryMsg,
+};

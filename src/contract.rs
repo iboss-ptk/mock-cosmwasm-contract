@@ -50,6 +50,8 @@ mod tests {
         to_json_string,
     };
 
+    use crate::msg::{query_msg, set_stub_query_msg};
+
     use super::*;
 
     #[cw_serde]
@@ -66,40 +68,36 @@ mod tests {
     fn test_stub_query() {
         let mut deps = mock_dependencies();
 
-        let query_msg = QueryMsg::new(&TestQueryMsg::QueryVariant {
+        let q = TestQueryMsg::QueryVariant {
             arg: "first".to_string(),
-        })
-        .unwrap();
+        };
 
-        let query_response = to_json_string(&QueryResponse {
+        let query_response = QueryResponse {
             value: "first".to_string(),
-        })
-        .unwrap();
+        };
 
         execute(
             deps.as_mut(),
             mock_env(),
             mock_info("sender", &[]),
-            ExecuteMsg::SetStubQuery {
-                query: query_msg.clone(),
-                response: query_response.clone(),
-            },
+            set_stub_query_msg(&q, &query_response).unwrap(),
         )
         .unwrap();
 
-        let actual_query_response = query(deps.as_ref(), mock_env(), query_msg).unwrap();
+        let actual_query_response =
+            query(deps.as_ref(), mock_env(), query_msg(&q).unwrap()).unwrap();
 
         assert_eq!(
-            query_response,
-            from_json::<String>(&actual_query_response).unwrap()
+            to_json_string(&query_response).unwrap(),
+            from_json::<String>(&actual_query_response.as_slice()).unwrap()
         );
 
-        let query_msg = QueryMsg::new(&TestQueryMsg::QueryVariant {
+        let q = query_msg(&TestQueryMsg::QueryVariant {
             arg: "first_no_stub".to_string(),
         })
         .unwrap();
 
-        let err = query(deps.as_ref(), mock_env(), query_msg).unwrap_err();
+        let err = query(deps.as_ref(), mock_env(), q).unwrap_err();
 
         assert_eq!(
             err,
